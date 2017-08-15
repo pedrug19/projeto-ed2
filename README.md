@@ -5,11 +5,7 @@ Criar filas de processos (Job, Pronto, Dispositivo), mais ou menos essa estrutur
 FILA DE ESCALONAMENTO ED2
 
 
-											                                -->{ FILA PRONTO: RECEBE PROCESSOS DE JOB --->\
-											                               	 										                           			
-FILA JOB: ID1231, ID23131, ID1232132, ID232424 -->  												                        
-											                              											                           
-											                               <--{ FILA EXECUÇÃO: RECEBE PROCESSOS DE PRONTO  <--
+FILA JOBS (RECEBE PROCESSOS CRIADOS) ----> FILA PRONTO (RECEBE PROCESSOS PARADOS PARA EXECUÇÃO ---> FILA DISPOSITIVO (EXECUÇÃO) ---> FILA PRONTO ---> .......
 
 ************************************************************************************************************
 
