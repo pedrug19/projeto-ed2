@@ -9,7 +9,7 @@ FILA JOBS (RECEBE PROCESSOS CRIADOS) ----> FILA PRONTO (RECEBE PROCESSOS PARADOS
 
 ************************************************************************************************************
 
->>> ESTRUTURA DE PROCESSOS:
+> ESTRUTURA DE PROCESSOS:
 
 STRUCT PROCESSOS{
 	PONTEIRO DA PILHA;
@@ -17,8 +17,8 @@ STRUCT PROCESSOS{
 	ID;	
 } PROCESSOS;
 
->>> PROCESSOS TEM TEMPO DE EXECUÇÃO E CONTADOR
+> PROCESSOS TEM TEMPO DE EXECUÇÃO E CONTADOR
 
->>> DAQUI 15 DIAS...
+> DAQUI 15 DIAS...
 
->>> 2 semanas: 15/8/2017 para o dia 29/8/2017
+> 2 semanas: 15/8/2017 para o dia 29/8/2017
