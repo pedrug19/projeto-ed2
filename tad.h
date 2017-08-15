@@ -1,3 +1,11 @@
+/*
+*       Autores:
+*       Luís Marcello da Silva
+*       Gustavo Molina
+*       Gabriel Vinícius
+*       Pedrenrique G. Guimarães
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -22,7 +30,12 @@ struct filaPronto {
     struct filaPronto *fim;
 } FilaPronto;
 
-Processos *cria_pilha();
+
+/*Protótipo para criação das estruturas*/
+Processos *cria_pilha(); //TALVEZ SEJA DESNECESSÁRIO CRIAR ESSA PILHA
 FilaJob *cria_fila_job();
 FilaExec *cria_fila_exec();
 FilaPronto *cria_fila_pronto();
+
+/*Algoritmos de seleção*/
+FilaJob *Algoritmo_RR(FilaJob a);
