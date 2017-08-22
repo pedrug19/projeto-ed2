@@ -275,19 +275,32 @@ LISTA *resolveProcesso(LISTA *pronto){//Aparentemente certa
 //o processo aguardará o usuário autorizá-lo a voltar para a FILA PRONTO
 //deve ser "removido da CPU" ou seja, move o primeiro elemento do PRONTO
 //e o retorna em último na FILA PRONTO
-LISTA* moveDispositivo(LISTA *pronto, LISTA *dispositivo){
+LISTA* moveProntoParaDispositivo(LISTA *pronto, LISTA *dispositivo){
 	Processo *aux1 = pronto->inicio;
 	Processo *aux2 = dispositivo->inicio;
 	
-	if(pronto->inicio==NULL ||  dispositivo->inicio==NULL){
+	if(pronto->inicio==NULL){
 		printf("\nNão há como bloquear processo.\n");
 		
 	}else{
 		dispositivo->fim=aux1;
+		dispositivo->fim->prox= NULL;
 		pronto->inicio = pronto->inicio->prox;
 	}
 	
 	return dispositivo;
+}
+
+LISTA* moveDispositivoParaPronto(LISTA *pronto, LISTA *dispositivo){
+	Processo *aux1= pronto->fim;
+	Processo *aux2= dispositivo->inicio;
+	if(dispositivo->inicio==NULL){
+		printf("\nNao ha como desbloquear processo.\n");
+	}else{
+		pronto->fim= dispositivo->inicio;
+		pronto->fim->prox= NULL;
+		dispositivo->inicio= dispositivo->inicio->prox;
+	}
 }
 
 Processo *removeProcesso(Processo *l){//recebe o inicio de PRONTO e retira UM elemento
