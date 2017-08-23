@@ -167,6 +167,20 @@ int contaPronto(LISTA *pronto) {
     return n;
 }
 
+int contaDispositivo(LISTA *dispositivo) {
+    int n;
+    if (dispositivo->inicio == NULL) {
+        n = 0;
+    } else {
+        Processo *aux = dispositivo->inicio;
+        while (aux != NULL) {
+            n++;
+            aux = aux->prox;
+        }
+    }
+    return n;
+}
+
 //função para criar um processo, deve inserir na fila JOBS
 //e deve ser contínuo e aleatória
 
@@ -290,7 +304,7 @@ LISTA *resolveProcesso(LISTA *pronto) {//Aparentemente certa
  *   deve ser "removido da CPU" ou seja, move o primeiro elemento do PRONTO
  *   e o retorna em último na FILA PRONTO
  */
-LISTA* moveProntoParaDispositivo(LISTA *pronto, LISTA *dispositivo){
+LISTA* moveProntoParaDispositivo(LISTA *pronto, LISTA *dispositivo){ // Testado e funcionando
 	Processo *aux1 = pronto->inicio;
 	Processo *aux2 = dispositivo->inicio;
 	
@@ -298,13 +312,21 @@ LISTA* moveProntoParaDispositivo(LISTA *pronto, LISTA *dispositivo){
 		printf("\nNão há como bloquear processo.\n");
 		
 	}else{
-		dispositivo->fim=aux1;
-		dispositivo->fim->prox= NULL;
-		pronto->inicio = pronto->inicio->prox;
+		if(dispositivo->inicio==NULL){ //Se a fila de dispositivo estiver vazia!
+			dispositivo->inicio= aux1;
+			dispositivo->fim=aux1;
+			dispositivo->fim->prox= NULL;
+			pronto->inicio = pronto->inicio->prox;			
+		}else{ 
+			dispositivo->fim=aux1;
+			dispositivo->fim->prox= NULL;
+			pronto->inicio = pronto->inicio->prox;			
+		}
 	}
 	
 	return dispositivo;
 }
+
 
 LISTA* moveDispositivoParaPronto(LISTA *pronto, LISTA *dispositivo){
 	Processo *aux1= pronto->fim;
@@ -402,6 +424,13 @@ int main() {
             dispositivo = moveProntoParaDispositivo(pronto, dispositivo);
             sleep(1);
         }
+
+	int quantDispositivo= contaDispositivo(dispositivo);	    
+        if (sei == 9 && quantDispositivo > 1) {//move para a pronto; garante que haja pelo menos um processo na fila DISPOSITIVO
+            printf("\nHouve desbloqueio de processos!\n");
+            pronto = moveDispositivoParaPronto(pronto, dispositivo);
+            sleep(1);
+        }	    
 
         sleep(1);
 
