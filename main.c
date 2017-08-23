@@ -425,6 +425,7 @@ int main() {
             sleep(1);
         }
 
+	int quantDispositivo= contaDispositivo(dispositivo);	    
         if (sei == 9 && quantDispositivo > 1) {//move para a pronto; garante que haja pelo menos um processo na fila DISPOSITIVO
             printf("\nHouve desbloqueio de processos!\n");
             pronto = moveDispositivoParaPronto(pronto, dispositivo);
