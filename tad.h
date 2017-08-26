@@ -1,41 +1,53 @@
 /*
-*       Autores:
-*       Luís Marcello da Silva
-*       Gustavo Molina
-*       Gabriel Vinícius
-*       Pedrenrique G. Guimarães
-*/
+ *   Execício 1 - Lab_ED2 
+ *   Autores:
+ *   Gustavo Molina
+ *   Gabriel Vinícius
+ *   Luis Marcello 
+ *   Pedrenrique Gonçalves
+ */
 
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef TAD_H
+#define TAD_H
 
-struct proc {
-    int ID;
-    struct proc *pilha;
-    int status;
-} Processos;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-struct filaJob {
-    struct filaJob *inicio;
-    struct filaJob *fim;
-} FilaJob;
+typedef struct PROCESSO {
+    struct PROCESSO *prox;
+    int id;
+    int tempoCPU;
+    char estado[20];
+    int stack, heap, data;
+} Processo;
 
-struct filaExec {
-    struct filaExec *inicio;
-    struct filaExec *fim;
-} FilaExec;
+//struct para controlar as FILAS
+typedef struct lista {
+    Processo *inicio;
+    Processo *fim;
+} LISTA;
 
-struct filaPronto {
-    struct filaPronto *inicio;
-    struct filaPronto *fim;
-} FilaPronto;
+void limpa(LISTA *l);
+Processo *removeProcesso(Processo *l);
+LISTA *criaLista();
+void exibirJobs(LISTA *jobs);
+void exibirPronto(LISTA *pronto);
+void exibirDispositivo(LISTA *Dispositivo);
+int contaPronto(LISTA *pronto);
+int contaDispositivo(LISTA *dispositivo);
+LISTA* criaProcesso(LISTA *l);
+LISTA *movePronto(LISTA *jobs, LISTA *pronto);
+LISTA *resolveProcesso(LISTA *pronto);
+LISTA* moveProntoParaDispositivo(LISTA *pronto, LISTA *dispositivo);
+LISTA* moveDispositivoParaPronto(LISTA *pronto, LISTA *dispositivo);
+Processo *removeProcesso(Processo *l);
+void limpa(LISTA *l);
 
 
-/*Protótipo para criação das estruturas*/
-Processos *cria_pilha(); //TALVEZ SEJA DESNECESSÁRIO CRIAR ESSA PILHA
-FilaJob *cria_fila_job();
-FilaExec *cria_fila_exec();
-FilaPronto *cria_fila_pronto();
+#ifdef __cplusplus
+}
+#endif
 
-/*Algoritmos de seleção*/
-FilaJob *Algoritmo_RR(FilaJob a);
+#endif /* TAD_H */
+
