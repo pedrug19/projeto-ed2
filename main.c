@@ -11,29 +11,10 @@
 #include <string.h>
 #include <time.h>
 #include <locale.h>
+#include "tad.h"
 
 int quantum = 10;
 int quantPronto = 0;
-
-//struct do processo
-
-typedef struct PROCESSO {
-    struct PROCESSO *prox;
-    int id;
-    int tempoCPU;
-    char estado[20];
-    int stack, heap, data;
-} Processo;
-
-//struct para controlar as FILAS
-
-typedef struct lista {
-    Processo *inicio;
-    Processo *fim;
-} LISTA;
-
-void limpa(LISTA *l);
-Processo *removeProcesso(Processo *l);
 
 LISTA *criaLista() {
     LISTA *l = (LISTA *) malloc(sizeof (LISTA));
@@ -114,15 +95,11 @@ void exibirPronto(LISTA *pronto) {
                 aux = aux->prox;
             }
             printf("\n");
-
         }
-
     }
-
 }
 
 //recebe o INICIO de uma fila como parâmetro
-
 void exibirDispositivo(LISTA *Dispositivo) {
 
     if (Dispositivo->inicio == NULL) {
@@ -250,7 +227,7 @@ LISTA *movePronto(LISTA *jobs, LISTA *pronto) {//Arrumar
          * 
          */
         jobs->inicio = aux->prox;
-        if(pronto->fim == NULL){ //Se a fila JOBS estiver vazia
+        if (pronto->fim == NULL) { //Se a fila JOBS estiver vazia
             pronto->inicio = aux;
             aux->prox = NULL;
             pronto->fim = aux;
@@ -304,40 +281,39 @@ LISTA *resolveProcesso(LISTA *pronto) {//Aparentemente certa
  *   deve ser "removido da CPU" ou seja, move o primeiro elemento do PRONTO
  *   e o retorna em último na FILA PRONTO
  */
-LISTA* moveProntoParaDispositivo(LISTA *pronto, LISTA *dispositivo){ // Testado e funcionando
-	Processo *aux1 = pronto->inicio;
-	Processo *aux2 = dispositivo->inicio;
-	
-	if(pronto->inicio==NULL){
-		printf("\nNão há como bloquear processo.\n");
-		
-	}else{
-		if(dispositivo->inicio==NULL){ //Se a fila de dispositivo estiver vazia!
-			dispositivo->inicio= aux1;
-			dispositivo->fim=aux1;
-			dispositivo->fim->prox= NULL;
-			pronto->inicio = pronto->inicio->prox;			
-		}else{ 
-			dispositivo->fim=aux1;
-			dispositivo->fim->prox= NULL;
-			pronto->inicio = pronto->inicio->prox;			
-		}
-	}
-	
-	return dispositivo;
+LISTA* moveProntoParaDispositivo(LISTA *pronto, LISTA *dispositivo) { // Testado e funcionando
+    Processo *aux1 = pronto->inicio;
+    Processo *aux2 = dispositivo->inicio;
+
+    if (pronto->inicio == NULL) {
+        printf("\nNão há como bloquear processo.\n");
+
+    } else {
+        if (dispositivo->inicio == NULL) { //Se a fila de dispositivo estiver vazia!
+            dispositivo->inicio = aux1;
+            dispositivo->fim = aux1;
+            dispositivo->fim->prox = NULL;
+            pronto->inicio = pronto->inicio->prox;
+        } else {
+            dispositivo->fim = aux1;
+            dispositivo->fim->prox = NULL;
+            pronto->inicio = pronto->inicio->prox;
+        }
+    }
+
+    return dispositivo;
 }
 
-
-LISTA* moveDispositivoParaPronto(LISTA *pronto, LISTA *dispositivo){
-	Processo *aux1= pronto->fim;
-	Processo *aux2= dispositivo->inicio;
-	if(dispositivo->inicio==NULL){
-		printf("\nNao ha como desbloquear processo.\n");
-	}else{
-		pronto->fim= dispositivo->inicio;
-		pronto->fim->prox= NULL;
-		dispositivo->inicio= dispositivo->inicio->prox;
-	}
+LISTA* moveDispositivoParaPronto(LISTA *pronto, LISTA *dispositivo) {
+    Processo *aux1 = pronto->fim;
+    Processo *aux2 = dispositivo->inicio;
+    if (dispositivo->inicio == NULL) {
+        printf("\nNao ha como desbloquear processo.\n");
+    } else {
+        pronto->fim = dispositivo->inicio;
+        pronto->fim->prox = NULL;
+        dispositivo->inicio = dispositivo->inicio->prox;
+    }
 }
 
 Processo *removeProcesso(Processo *l) {//recebe o inicio de PRONTO e retira UM elemento
@@ -425,12 +401,12 @@ int main() {
             sleep(1);
         }
 
-	int quantDispositivo= contaDispositivo(dispositivo);	    
+        int quantDispositivo = contaDispositivo(dispositivo);
         if (sei == 9 && quantDispositivo > 1) {//move para a pronto; garante que haja pelo menos um processo na fila DISPOSITIVO
             printf("\nHouve desbloqueio de processos!\n");
             pronto = moveDispositivoParaPronto(pronto, dispositivo);
             sleep(1);
-        }	    
+        }
 
         sleep(1);
 
@@ -466,4 +442,3 @@ int main() {
     }
     return 0;
 }
-
