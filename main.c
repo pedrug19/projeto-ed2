@@ -1,3 +1,4 @@
+
 /*
  *   Execício 1 - Lab_ED2 
  *   Autores:
@@ -11,9 +12,12 @@
 #include <string.h>
 #include <time.h>
 #include <locale.h>
+#include <unistd.h>
 
+//variáveis de controle
 int quantum = 10;
-int quantPronto = 0;
+int quantPronto=0;
+int fazer = 1;
 
 //struct do processo
 
@@ -32,9 +36,19 @@ typedef struct lista {
     Processo *fim;
 } LISTA;
 
-void limpa(LISTA *l);
+//função para liberar as LISTAS da memória
+void limpa(LISTA *l) {
+    Processo *aux = l->inicio;
+    while (l->inicio != NULL) {
+        aux = l->inicio;
+        l->inicio = l->inicio->prox;
+        free(aux);
+    }
+}
+
 Processo *removeProcesso(Processo *l);
 
+//inicializa as LISTAs de forma genérica 
 LISTA *criaLista() {
     LISTA *l = (LISTA *) malloc(sizeof (LISTA));
     l->fim = NULL;
@@ -54,22 +68,22 @@ void exibirJobs(LISTA *jobs) {
 
         printf("\n---FILA JOBS---\n");
         while (aux != NULL) {
-            printf("|ID:%d \t\t", aux->id);
-            aux = aux->prox;
-        }
-        printf("\n");
-        aux = jobs->inicio;
-        while (aux != NULL) {
-            printf("|Tempo de CPU:%d \t", aux->tempoCPU);
-            aux = aux->prox;
-        }
-        printf("\n");
-        aux = jobs->inicio;
-        while (aux != NULL) {
-            printf("|Estado:%s \t", aux->estado);
-            aux = aux->prox;
-        }
-        printf("\n");
+            printf("|ID:%d ", aux->id);
+       	 	printf("\n");
+       	 	printf("|DATA:%d ", aux->data);
+       	 	printf("\n"); 
+       	 	printf("|HEAP:%d ", aux->heap);
+       	 	printf("\n"); 
+			printf("|Stack:%d ", aux->stack);
+       	 	printf("\n");
+            printf("|Tempo de CPU:%d ", aux->tempoCPU);
+        	printf("\n");
+            printf("|Estado:%s ", aux->estado);
+            printf("\n");
+			printf("\n");
+			aux = aux->prox;
+    	}
+        
     }
 
 }
@@ -79,49 +93,32 @@ void exibirJobs(LISTA *jobs) {
 void exibirPronto(LISTA *pronto) {
 
     if (pronto->inicio == NULL) {
-        printf("\nLista de PRONTOS vazia.\n");
+        printf("\nLista de PRONTO vazia.\n");
     } else {
         Processo *aux = pronto->inicio;
 
         printf("\n---FILA PRONTO---\n");
-
-
-        if (aux == pronto->inicio) {
-
-            printf("\nProcesso na CPU:\n");
-            printf("\n________________\n");
+        printf("\n---PROCESSO NA CPU---\n");
+        while (aux != NULL) {
             printf("|ID:%d \t\t", aux->id);
-            printf("|Tempo de CPU:%d \t", aux->tempoCPU);
-            printf("|Estado:%s \t", aux->estado);
-            printf("\n________________\n");
             aux = aux->prox;
-
-        } else {
-            while (aux != NULL) {
-                printf("|ID:%d \t\t", aux->id);
-                aux = aux->prox;
-            }
-            printf("\n");
-            aux = pronto->inicio->prox;
-            while (aux != NULL) {
-                printf("|Tempo de CPU:%d \t", aux->tempoCPU);
-                aux = aux->prox;
-            }
-            printf("\n");
-            aux = pronto->inicio->prox;
-            while (aux != NULL) {
-                printf("|Estado:%s \t", aux->estado);
-                aux = aux->prox;
-            }
-            printf("\n");
-
         }
-
+        printf("\n");
+        aux = pronto->inicio;
+        while (aux != NULL) {
+            printf("|Tempo CPU:%d \t\t", aux->tempoCPU);
+            aux = aux->prox;
+        }
+        printf("\n");
+        aux = pronto->inicio;
+        while (aux != NULL) {
+            printf("|Estado:%s \t", aux->estado);
+            aux = aux->prox;
+        }
+        printf("\n");
     }
-
 }
 
-//recebe o INICIO de uma fila como parâmetro
 
 void exibirDispositivo(LISTA *Dispositivo) {
 
@@ -139,7 +136,7 @@ void exibirDispositivo(LISTA *Dispositivo) {
             printf("\n");
             aux = Dispositivo->inicio;
             while (aux != NULL) {
-                printf("|Tempo de CPU:%d \t", aux->tempoCPU);
+                printf("|Tempo de CPU:%d \t\t", aux->tempoCPU);
                 aux = aux->prox;
             }
             printf("\n");
@@ -153,8 +150,9 @@ void exibirDispositivo(LISTA *Dispositivo) {
     }
 }
 
+// Recebe a FILA PRONTO de parâmetro e conta quantos termos ela tem
 int contaPronto(LISTA *pronto) {
-    int n;
+    int n=0;
     if (pronto->inicio == NULL) {
         n = 0;
     } else {
@@ -167,8 +165,9 @@ int contaPronto(LISTA *pronto) {
     return n;
 }
 
+// Recebe a FILA DISPOSITIVO de parâmetro e conta quantos termos ela tem
 int contaDispositivo(LISTA *dispositivo) {
-    int n;
+    int n=0;
     if (dispositivo->inicio == NULL) {
         n = 0;
     } else {
@@ -181,35 +180,21 @@ int contaDispositivo(LISTA *dispositivo) {
     return n;
 }
 
-//função para criar um processo, deve inserir na fila JOBS
-//e deve ser contínuo e aleatória
-
+//função para criar um processo, deve inserir na fila JOBS de forma aleatória
 LISTA* criaProcesso(LISTA *l) {//Funciona!
     int ale, i;
     //gerar variação no ID
     for (i = 0; i < 2; i++) {
         ale = (rand() % 10000) + 1;
-        //printf("\nFUNÇAO:%d", ale);
     }
     int aux_id = ale;
     int aux_stack = (rand() % 10) + 4;
     int aux_heap = (rand() % 10) + 6;
     int aux_data = (rand() % 10) + 8;
-    float aux_tempo = (rand() % 5) + 5;
+    int aux_tempo = (rand() % 5) + 3;
     char aux_estado[20];
     fflush(stdin); //limpa o buffer
     strcpy(aux_estado, "Na fila JOBS");
-
-    /*
-            printf("\nCriação de processo.\n");
-            printf("\n%d\n",aux_id);
-            printf("\n%d\n",aux_stack);
-            printf("\n%d\n",aux_heap);
-            printf("\n%d\n",aux_data);
-            printf("\n%d\n",aux_tempo);
-            printf("\n%s\n",aux_estado);
-            system("pause");
-     */
 
     Processo *novo = (Processo *) malloc(sizeof (Processo));
     novo->prox = NULL;
@@ -241,61 +226,53 @@ LISTA* criaProcesso(LISTA *l) {//Funciona!
  *   aqui, os processos começaram a ser atendidos segundo o RR
  */
 
-LISTA *movePronto(LISTA *jobs, LISTA *pronto) {//Arrumar
-    Processo *aux = jobs->inicio;
-
-    while (quantPronto < 6 && jobs->inicio != NULL) {
-        /*  COMENTAR AQUI
-         * 
-         * 
+LISTA *movePronto(LISTA *jobs, LISTA *pronto) {
+    
+	Processo *aux = jobs->inicio;
+	
+	quantPronto = contaPronto(pronto);
+	int x = quantPronto;  
+	
+	while ( x < 5 && jobs->inicio != NULL) {
+    	
+        /*  Este x vai até 5, garante que haja no máximo 5 processos na fila de pronto
+         *  e deve existir elemento na FILA de Jobs
          */
+        fflush(stdin);
+		strcpy(aux->estado, "Na Fila PRONTO");
         jobs->inicio = aux->prox;
-        if(pronto->fim == NULL){ //Se a fila JOBS estiver vazia
+        if(pronto->inicio == NULL){ //Se a fila JOBS estiver vazia
             pronto->inicio = aux;
-            aux->prox = NULL;
             pronto->fim = aux;
-        } else {
+            aux->prox = NULL;
+        } else {//Se tiver elementos
             pronto->fim->prox = aux;
-            aux->prox = NULL;
             pronto->fim = aux;
+            aux->prox = NULL;
         }
         aux = jobs->inicio;
-        quantPronto++;
-    }
-
-    return pronto;
+    	x++;
+    }     
+    return jobs;
 }
 
-LISTA *resolveProcesso(LISTA *pronto) {//Aparentemente certa
+//Função para decrementar o valor do tempo, 
+//arruma a lista de forma a deixa-lá circular
+LISTA *resolveProcesso(LISTA *pronto) {
 
     Processo *aux = pronto->inicio;
 
-    printf("\nResolução do processo\n");
-    printf("\n%d\n", aux->id);
-    printf("\n%d\n", aux->stack);
-    printf("\n%d\n", aux->heap);
-    printf("\n%d\n", aux->data);
-    printf("\n%d\n", aux->tempoCPU);
-    printf("\n%s\n", aux->estado);
-    system("pause");
-
-    aux->tempoCPU = aux->tempoCPU - quantum; //"resolve" o processo
-    if (aux->tempoCPU <= 0) {//se resolveu o processo
-        removeProcesso(aux);
-    } else {//se não resolveu
-        pronto->fim->prox = aux; //fim aponta para o processo não acabado
-        aux = aux->prox; //vai pro fim da fila
-    }
-
-    printf("\nPróximo processo a ser executado será:\n");
-    printf("\n%d\n", aux->id);
-    printf("\n%d\n", aux->stack);
-    printf("\n%d\n", aux->heap);
-    printf("\n%d\n", aux->data);
-    printf("\n%d\n", aux->tempoCPU);
-    printf("\n%s\n", aux->estado);
-    system("pause");
-
+	aux->tempoCPU = aux->tempoCPU - quantum; //"resolve" o processo
+    if ( (aux->tempoCPU) <= 0) {//se resolveu o processo
+    	pronto->inicio = pronto->inicio->prox;    
+		free(aux);
+    }else {//se não resolveu
+    	pronto->inicio = pronto->inicio->prox;
+		pronto->fim->prox = aux;
+        pronto->fim = aux;
+        aux->prox = NULL;
+	}
+	
     return pronto;
 }
 
@@ -304,70 +281,65 @@ LISTA *resolveProcesso(LISTA *pronto) {//Aparentemente certa
  *   deve ser "removido da CPU" ou seja, move o primeiro elemento do PRONTO
  *   e o retorna em último na FILA PRONTO
  */
-LISTA* moveProntoParaDispositivo(LISTA *pronto, LISTA *dispositivo){ // Testado e funcionando
-	Processo *aux1 = pronto->inicio;
-	Processo *aux2 = dispositivo->inicio;
+LISTA* moveProntoParaDispositivo(LISTA *pronto, LISTA *dispositivo){
 	
 	if(pronto->inicio==NULL){
 		printf("\nNão há como bloquear processo.\n");
 		
 	}else{
-		if(dispositivo->inicio==NULL){ //Se a fila de dispositivo estiver vazia!
-			dispositivo->inicio= aux1;
-			dispositivo->fim=aux1;
-			dispositivo->fim->prox= NULL;
-			pronto->inicio = pronto->inicio->prox;			
-		}else{ 
-			dispositivo->fim=aux1;
-			dispositivo->fim->prox= NULL;
-			pronto->inicio = pronto->inicio->prox;			
+		Processo *aux1 = pronto->inicio;
+		pronto->inicio = aux1->prox;	
+		fflush(stdin);
+		strcpy(aux1->estado, "Na Fila DISPOSITIVO");
+		if(dispositivo->inicio==NULL){//se a dispositivo estiver vazia
+			dispositivo->inicio = aux1;
+			dispositivo->fim = aux1;
+		}else{//se já tiver elemento
+			dispositivo->fim->prox = aux1;
+			dispositivo->fim = aux1;
+		}
+		dispositivo->fim->prox = NULL;
+	}
+	
+	return pronto;
+}
+
+/* Move um único nó da FILA dispositivo para pronto. 
+* Inserese no fim, independente do tamanho da pronto.
+* Menor chance de ocorrer
+*/ 
+LISTA* moveDispositivoParaPronto(LISTA *pronto, LISTA *dispositivo){
+	
+
+	
+	if(dispositivo->inicio==NULL){
+		printf("\nNao ha como desbloquear processo.\n");
+	}else{
+		
+		Processo *aux1 = dispositivo->inicio;
+		Processo *aux2 = pronto->fim;
+		
+		fflush(stdin);
+		strcpy(dispositivo->inicio->estado, "Na Fila PRONTO");
+		if(pronto->inicio == NULL){
+			pronto->inicio = aux1;
+			pronto->fim = aux1;
+			dispositivo->inicio = aux1->prox;
+			aux1->prox = NULL;
+		} else {
+			dispositivo->inicio = dispositivo->inicio->prox;
+			aux2->prox = aux1;
+			aux1->prox = NULL;
 		}
 	}
 	
 	return dispositivo;
 }
 
-
-LISTA* moveDispositivoParaPronto(LISTA *pronto, LISTA *dispositivo){
-	Processo *aux1= pronto->fim;
-	Processo *aux2= dispositivo->inicio;
-	if(dispositivo->inicio==NULL){
-		printf("\nNao ha como desbloquear processo.\n");
-	}else{
-		pronto->fim= dispositivo->inicio;
-		pronto->fim->prox= NULL;
-		dispositivo->inicio= dispositivo->inicio->prox;
-	}
-}
-
-Processo *removeProcesso(Processo *l) {//recebe o inicio de PRONTO e retira UM elemento
-
-    if (l == NULL) {
-        printf("\nNada a remover.\n");
-    } else {
-        Processo *aux = l; //aux é o INICIO da FILA
-        l = l->prox;
-        free(aux);
-    }
-    return l;
-}
-
-
-//limpa os buffers
-
-void limpa(LISTA *l) {
-    Processo *aux = l->inicio;
-    while (l->inicio != NULL) {
-        aux = l->inicio;
-        l->inicio = l->inicio->prox;
-        free(aux);
-    }
-}
-
 int main() {
     setlocale(LC_ALL, "portuguese");
     int opc = 0, sei = 0;
-    int i;
+    int i, decide=0;
     srand(time(NULL));
 
     //declaração e inicialização das 3 FILAS solicitadas
@@ -387,63 +359,54 @@ int main() {
             system("cls");
         }
     }
+	system("pause");
+	while (1) {
+    
+		while(fazer==1){//Responsável por fazer as operações de forma automática e aleatória
+        	system("cls");
+        	//quando entrar neste laço, já cria um novo processo aleatório
 
-    system("pause");
-
-    while (1) {
-        system("cls");
-        //quando entrar neste laço, já cria um novo processo aleatório
-
-        sei = rand() % 10 + 1; //ta certo
-        for (i = 0; i < sei; i++)
-            jobs = criaProcesso(jobs);
-
-        quantPronto = contaPronto(pronto); //conta quantos elementos tem no FILA PRONTO
-        printf("Quantidade na FILA PRONTO:%d", quantPronto); //tudo certo até aqui
-
-
-
-        //---------------------------------------------------------------------------------------------------------------------
-        if (quantPronto < 5) {// a FILA PRONTO suporta apenas 5 processos carregados na memória proncipal
-            pronto = movePronto(jobs, pronto);
-            printf("\ninserindo na PRONTO\n");
-        }
-        printf("Quantidade na FILA PRONTO:%d", quantPronto);
-        system("pause");
-        pronto = resolveProcesso(pronto);
-
-        /*
-        //aleatoriedade
-        for(i=0;i<2;i++){
-                sei = (rand()%10)+1;
-        }
-         */
-
-        if (sei == 10 && quantPronto > 1) {//move para a dispositivo; garante que haja pelo menos um processo na fila PRONTO
-            printf("\nHouve interrupção!\n");
-            dispositivo = moveProntoParaDispositivo(pronto, dispositivo);
-            sleep(1);
-        }
-
-	int quantDispositivo= contaDispositivo(dispositivo);	    
-        if (sei == 9 && quantDispositivo > 1) {//move para a pronto; garante que haja pelo menos um processo na fila DISPOSITIVO
-            printf("\nHouve desbloqueio de processos!\n");
-            pronto = moveDispositivoParaPronto(pronto, dispositivo);
-            sleep(1);
-        }	    
-
-        sleep(1);
-
-        exibirJobs(jobs);
-        exibirPronto(pronto);
-        exibirDispositivo(dispositivo);
-
-
+        	sei = rand() % 10 + 1;
+        	for (i = 0; i < sei ; i++)
+        	    jobs = criaProcesso(jobs);
+        	           	
+       		if(decide==1){//na primeira iteração, ele NÃO joga na FILA PRONTO
+			   
+        		jobs = movePronto(jobs, pronto);
+        		
+        		pronto = resolveProcesso(pronto);
+			}
+			
+        	if ( sei >= 8  &&  quantPronto >= 1) {//move para a dispositivo; garante que haja pelo menos um processo na fila PRONTO
+            	printf("\nHouve interrupção!\n");
+            	system("pause");
+            	pronto = moveProntoParaDispositivo(pronto, dispositivo);
+            	sleep(1);
+        	}
+        
+			int quantDispositivo = contaDispositivo(dispositivo);
+        
+			if ( sei == 10  &&  quantDispositivo >= 1) {//move para a pronto; garante que haja pelo menos um processo na fila DISPOSITIVO
+        	    printf("\nHouve desbloqueio de processos!\n");
+        	    system("pause");
+        	    dispositivo = moveDispositivoParaPronto(pronto, dispositivo);
+        	    sleep(1);
+        	}
+			
+        	fazer=0;
+        	decide=1;
+        	sleep(1);
+		}
+		system("cls");
+		printf("\n QUANTUM:%d \n", quantum);
         printf("\n Menu: \n");
         printf("\n1 para continuar:\n");
-        printf("-1 para sair:");
+        printf("\n2 para exibir JOBS:\n");
+        printf("\n3 para exibir PRONTO:\n");
+        printf("\n4 para exibir DISPOSITIVO:\n");
+		printf("\n-1 para sair:\n");
         scanf("%d", &opc);
-        if (opc < -1 || opc > 3) {
+        if (opc < -1 || opc > 5) {
             printf("\nComando inválido!\n");
         } else {
 
@@ -451,19 +414,42 @@ int main() {
 
                 case 1:
                     printf("\nRodando!\n");
+                    fazer=1;
                     sleep(2);
                     break;
+                case 2:
+                    exibirJobs(jobs);
+                    system("pause");
+                    fazer = 0;
+                    break;
+   				case 3:
+   					exibirPronto(pronto);
+                    system("pause");
+					fazer = 0;
+					break;
+   				case 4:
+                    exibirDispositivo(dispositivo);
+                    system("pause");
+					fazer = 0;
+					break;
                 case -1:
-                    printf("\nLimpando Listas...\n");
+                	fazer = 0;
+                    printf("\nLimpando Listas...\n\n");
+                    printf("---------------------\n");
                     limpa(jobs);
+                    printf("-JOBS APAGADA-\n");
                     limpa(pronto);
+                    printf("-PRONTO APAGADA-\n");
                     limpa(dispositivo);
+                    printf("-DISPOSITIVO APAGADA-\n");
                     exit(1);
                     break;
+                default :
+                	printf("\nEntrada Inválida.\n");
+                	break;
             }
         }
 
     }
     return 0;
 }
-
